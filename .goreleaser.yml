@@ -39,7 +39,7 @@ signs:
       # need to pass the batch flag to indicate its not interactive.
       - "--batch"
       - "--local-user"
-      - "{{ .Env.GPG_FINGERPRINT }}" # set this environment variable for your signing key
+      - "5F738D59BF14E576B58607556089DEC46A3BE357" # set this environment variable for your signing key
       - "--output"
       - "${signature}"
       - "--detach-sign"

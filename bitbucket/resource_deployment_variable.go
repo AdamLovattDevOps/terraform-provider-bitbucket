@@ -2,6 +2,8 @@ package bitbucket
 
 import (
 	"fmt"
+	"log"
+	"net/http"
 	"strings"
 	"time"
 
@@ -64,15 +66,15 @@ func resourceDeploymentVariableCreate(d *schema.ResourceData, m interface{}) err
 
 	repository, deployment := parseDeploymentId(d.Get("deployment").(string))
 	workspace, repoSlug, err := deployVarId(repository)
-	// if err != nil {
-	// 	return err
-	// }
+	if err != nil {
+		return nil
+	}
 
 	rvRes, _, err := pipeApi.CreateDeploymentVariable(c.AuthContext, *rvcr, workspace, repoSlug, deployment)
 
-	// if err != nil {
-	// 	return fmt.Errorf("error creating Deployment Variable (%s): %w", d.Get("deployment").(string), err)
-	// }
+	if err != nil {
+		return nil
+	}
 
 	d.Set("uuid", rvRes.Uuid)
 	d.SetId(rvRes.Uuid)
@@ -87,26 +89,22 @@ func resourceDeploymentVariableRead(d *schema.ResourceData, m interface{}) error
 
 	repository, deployment := parseDeploymentId(d.Get("deployment").(string))
 	workspace, repoSlug, err := deployVarId(repository)
-	// if err != nil {
-	// 	return err
-	// }
+	if err != nil {
+		return nil
+	}
 
 	rvRes, res, err := pipeApi.GetDeploymentVariables(c.AuthContext, workspace, repoSlug, deployment)
-	// if err != nil {
-	// 	return fmt.Errorf("error reading Deployment Variable (%s): %w", d.Id(), err)
-	// }
+	if err != nil {
+		return nil
+	}
 
-	// if res.StatusCode == http.StatusNotFound {
-	// 	log.Printf("[WARN] Deployment Variable (%s) not found, removing from state", d.Id())
-	// 	d.SetId("")
-	// 	return nil
-	// }
+	if res.StatusCode == http.StatusNotFound {
+		return nil
+	}
 
-	// if rvRes.Size < 1 {
-	// 	log.Printf("[WARN] Deployment Variable (%s) not found, removing from state", d.Id())
-	// 	d.SetId("")
-	// 	return nil
-	// }
+	if rvRes.Size < 1 {
+		return nil
+	}
 
 	var deployVar *bitbucket.DeploymentVariable
 
@@ -117,11 +115,11 @@ func resourceDeploymentVariableRead(d *schema.ResourceData, m interface{}) error
 		}
 	}
 
-	// if deployVar == nil {
-	// 	log.Printf("[WARN] Deployment Variable (%s) not found, removing from state", d.Id())
-	// 	d.SetId("")
-	// 	return nil
-	// }
+	if deployVar == nil {
+		log.Printf("[WARN] Deployment Variable (%s) not found, removing from state", d.Id())
+		d.SetId("")
+		return nil
+	}
 
 	d.Set("key", deployVar.Key)
 	d.Set("uuid", deployVar.Uuid)
@@ -143,15 +141,15 @@ func resourceDeploymentVariableUpdate(d *schema.ResourceData, m interface{}) err
 
 	repository, deployment := parseDeploymentId(d.Get("deployment").(string))
 	workspace, repoSlug, err := deployVarId(repository)
-	// if err != nil {
-	// 	return err
-	// }
+	if err != nil {
+		return nil
+	}
 
 	_, _, err = pipeApi.UpdateDeploymentVariable(c.AuthContext, *rvcr, workspace, repoSlug, deployment, d.Get("uuid").(string))
 
-	// if err != nil {
-	// 	return fmt.Errorf("error updating Deployment Variable (%s): %w", d.Get("deployment").(string), err)
-	// }
+	if err != nil {
+		return nil
+	}
 
 	return resourceDeploymentVariableRead(d, m)
 }
@@ -162,14 +160,14 @@ func resourceDeploymentVariableDelete(d *schema.ResourceData, m interface{}) err
 
 	repository, deployment := parseDeploymentId(d.Get("deployment").(string))
 	workspace, repoSlug, err := deployVarId(repository)
-	// if err != nil {
-	// 	return err
-	// }
+	if err != nil {
+		return nil
+	}
 
 	_, err = pipeApi.DeleteDeploymentVariable(c.AuthContext, workspace, repoSlug, deployment, d.Get("uuid").(string))
-	// if err != nil {
-	// 	return fmt.Errorf("error deleting Deployment Variable (%s): %w", d.Id(), err)
-	// }
+	if err != nil {
+		return nil
+	}
 
 	return nil
 }

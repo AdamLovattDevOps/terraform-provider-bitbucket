@@ -80,8 +80,7 @@ func resourceDeploymentVariableCreate(d *schema.ResourceData, m interface{}) err
 	d.SetId(rvRes.Uuid)
 
 	time.Sleep(5000 * time.Millisecond) // sleep for a while, to allow BitBucket cache to catch up
-	return nil
-
+	return resourceDeploymentVariableRead(d, m)
 }
 
 func resourceDeploymentVariableRead(d *schema.ResourceData, m interface{}) error {
@@ -182,6 +181,6 @@ func deployVarId(repo string) (string, string, error) {
 	if len(idparts) == 2 {
 		return idparts[0], idparts[1], nil
 	} else {
-		return "", "", fmt.Errorf("incorrect ID format, should match `owner/key`")
+		return idparts[0], idparts[1], nil
 	}
 }

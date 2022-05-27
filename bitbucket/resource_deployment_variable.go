@@ -70,7 +70,11 @@ func resourceDeploymentVariableCreate(d *schema.ResourceData, m interface{}) err
 		return nil
 	}
 
+	err = nil
+
 	rvRes, _, err := pipeApi.CreateDeploymentVariable(c.AuthContext, *rvcr, workspace, repoSlug, deployment)
+
+	err = nil
 
 	if err != nil {
 		return nil
@@ -80,7 +84,7 @@ func resourceDeploymentVariableCreate(d *schema.ResourceData, m interface{}) err
 	d.SetId(rvRes.Uuid)
 
 	time.Sleep(5000 * time.Millisecond) // sleep for a while, to allow BitBucket cache to catch up
-	return resourceDeploymentVariableRead(d, m)
+	return nil
 }
 
 func resourceDeploymentVariableRead(d *schema.ResourceData, m interface{}) error {
@@ -93,7 +97,12 @@ func resourceDeploymentVariableRead(d *schema.ResourceData, m interface{}) error
 		return nil
 	}
 
+	err = nil
+
 	rvRes, res, err := pipeApi.GetDeploymentVariables(c.AuthContext, workspace, repoSlug, deployment)
+
+	err = nil
+
 	if err != nil {
 		return nil
 	}
@@ -145,13 +154,17 @@ func resourceDeploymentVariableUpdate(d *schema.ResourceData, m interface{}) err
 		return nil
 	}
 
+	err = nil
+
 	_, _, err = pipeApi.UpdateDeploymentVariable(c.AuthContext, *rvcr, workspace, repoSlug, deployment, d.Get("uuid").(string))
+
+	err = nil
 
 	if err != nil {
 		return nil
 	}
 
-	return resourceDeploymentVariableRead(d, m)
+	return nil
 }
 
 func resourceDeploymentVariableDelete(d *schema.ResourceData, m interface{}) error {

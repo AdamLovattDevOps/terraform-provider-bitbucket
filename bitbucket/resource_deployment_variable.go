@@ -72,10 +72,6 @@ func resourceDeploymentVariableCreate(d *schema.ResourceData, m interface{}) err
 
 	rvRes, _, err := pipeApi.CreateDeploymentVariable(c.AuthContext, *rvcr, workspace, repoSlug, deployment)
 
-	if err != nil {
-		return fmt.Errorf("error creating Deployment Variable (%s): %w", d.Get("deployment").(string), err)
-	}
-
 	d.Set("uuid", rvRes.Uuid)
 	d.SetId(rvRes.Uuid)
 
@@ -181,6 +177,6 @@ func deployVarId(repo string) (string, string, error) {
 	if len(idparts) == 2 {
 		return idparts[0], idparts[1], nil
 	} else {
-		return idparts[0], idparts[1], nil
+		return "", "", fmt.Errorf("incorrect ID format, should match `owner/key`")
 	}
 }
